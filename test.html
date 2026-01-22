@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自评表格 - 可视化展示</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>M自评报告 - 字母圈自测表单</title>
     
     <!-- TailwindCSS 3.0+ CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,49 +11,29 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- 自定义样式 -->
     <style>
-        /* 平滑滚动 */
-        html {
-            scroll-behavior: smooth;
+        html { 
+            scroll-behavior: smooth; 
+            -webkit-text-size-adjust: 100%;
         }
         
-        /* 自定义滚动条 */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.7); }
         
-        ::-webkit-scrollbar-thumb {
-            background: rgba(156, 163, 175, 0.5);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(156, 163, 175, 0.7);
-        }
-        
-        /* 淡入动画 */
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
         
-        /* 卡片悬停效果 */
         .card-hover {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -63,67 +43,99 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         
-        /* 按钮悬停效果 */
-        .btn-hover {
-            transition: all 0.2s ease-in-out;
-        }
+        .btn-hover { transition: all 0.2s ease-in-out; }
+        .btn-hover:hover { transform: scale(1.05); }
+        .btn-hover:active { transform: scale(0.98); }
         
-        .btn-hover:hover {
-            transform: scale(1.05);
-        }
-        
-        .btn-hover:active {
-            transform: scale(0.98);
-        }
-        
-        /* 输入框焦点效果 */
         .input-focus:focus {
             outline: none;
-            ring: 2px;
-            ring-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
         }
         
-        /* 打印样式 */
+        .rating-btn {
+            transition: all 0.2s ease;
+            min-width: 50px;
+            font-size: 0.875rem;
+        }
+        
+        .rating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .rating-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .rating-btn.active.sss { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .rating-btn.active.ss { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .rating-btn.active.s { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .rating-btn.active.q { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+        .rating-btn.active.n { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+        .rating-btn.active.w { background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 640px) {
+            .rating-btn {
+                min-width: 45px;
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+            }
+            
+            .card-hover:hover {
+                transform: none;
+            }
+            
+            .table-responsive {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+        
         @media print {
-            .no-print {
-                display: none !important;
-            }
-            
-            body {
-                background: white !important;
-                color: black !important;
-            }
-            
-            .card {
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .card { break-inside: avoid; page-break-inside: avoid; }
         }
         
-        /* 深色模式过渡 */
-        * {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+        
+        .section-header {
+            position: sticky;
+            top: 64px;
+            z-index: 10;
+            background: inherit;
+            padding: 1rem;
+            margin: -1rem -1rem 1rem -1rem;
+            border-bottom: 2px solid;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
         }
     </style>
     
     <script>
-        // TailwindCSS 配置
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
+                            50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc',
+                            400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1',
+                            800: '#075985', 900: '#0c4a6e',
                         }
                     }
                 }
@@ -134,475 +146,811 @@
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
     
     <!-- 顶部导航栏 -->
-    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+    <nav class="sticky top-0 z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-14 sm:h-16">
                 <div class="flex items-center space-x-2">
-                    <i class="fas fa-clipboard-list text-primary-600 dark:text-primary-400 text-xl"></i>
-                    <h1 class="text-xl font-semibold">自评表格</h1>
+                    <i class="fas fa-clipboard-check text-primary-600 dark:text-primary-400 text-lg sm:text-xl"></i>
+                    <h1 class="text-base sm:text-xl font-semibold">M自评报告</h1>
+                    <span id="saveStatus" class="ml-2 text-xs text-green-500 hidden sm:inline">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
                 </div>
                 
-                <div class="flex items-center space-x-4">
-                    <!-- 主题切换按钮 -->
+                <div class="flex items-center space-x-2 sm:space-x-4">
                     <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 btn-hover transition-colors" aria-label="切换主题">
-                        <i class="fas fa-moon dark:hidden text-gray-600"></i>
-                        <i class="fas fa-sun hidden dark:inline text-yellow-400"></i>
+                        <i class="fas fa-moon dark:hidden text-gray-600 text-sm sm:text-base"></i>
+                        <i class="fas fa-sun hidden dark:inline text-yellow-400 text-sm sm:text-base"></i>
                     </button>
                     
-                    <!-- 导出按钮 -->
-                    <button id="exportBtn" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg btn-hover font-medium flex items-center space-x-2">
-                        <i class="fas fa-download"></i>
-                        <span>导出文档</span>
+                    <button id="exportBtn" class="px-2 sm:px-4 py-1.5 sm:py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg btn-hover font-medium flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                        <i class="fas fa-file-word"></i>
+                        <span class="hidden sm:inline">导出DOC文档</span>
+                        <span class="sm:hidden">导出</span>
+                    </button>
+                    
+                    <button id="clearBtn" class="px-2 sm:px-4 py-1.5 sm:py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg btn-hover font-medium flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm no-print">
+                        <i class="fas fa-trash"></i>
+                        <span class="hidden sm:inline">清空</span>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
     
+    <!-- 评分说明 -->
+    <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-800 border-b border-purple-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+            <div class="text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+                <p class="mb-2 font-semibold">评分说明：根据情况填写自身感觉，可用字母表述或颜色或符号表示（听主人要求的）</p>
+                <div class="flex flex-wrap gap-2 sm:gap-4">
+                    <span><strong>SSS</strong> ❤❤❤❤❤ 非常喜欢</span>
+                    <span><strong>SS</strong> ♥♥ 喜欢</span>
+                    <span><strong>S</strong> ♥ 无所谓</span>
+                    <span><strong>Q</strong> - 不喜欢但有要求会做</span>
+                    <span><strong>N</strong> ✗ 绝不</span>
+                    <span><strong>W</strong> ? 不确定</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 进度指示器 -->
+    <div class="bg-primary-50 dark:bg-gray-800 border-b border-primary-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3">
+            <div class="flex items-center justify-between mb-1 sm:mb-2">
+                <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">完成进度</span>
+                <span id="progressText" class="text-xs sm:text-sm font-medium text-primary-600 dark:text-primary-400">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 sm:h-2">
+                <div id="progressBar" class="progress-bar bg-primary-600 h-1.5 sm:h-2 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+    
     <!-- 主内容区域 -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         
-        <!-- 个人信息卡片 -->
-        <div class="mb-8 fade-in">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 card-hover">
-                <h2 class="text-2xl font-bold mb-6 flex items-center space-x-2">
+        <!-- M详细资料 -->
+        <div class="mb-6 sm:mb-8 fade-in">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 card-hover">
+                <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 flex items-center space-x-2">
                     <i class="fas fa-user-circle text-primary-600 dark:text-primary-400"></i>
-                    <span>个人信息</span>
+                    <span>M详细资料</span>
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">姓名</label>
-                        <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="请输入姓名">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">姓名</label>
+                        <input type="text" id="name" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="请输入姓名">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">部门/岗位</label>
-                        <input type="text" id="department" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="请输入部门或岗位">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">年龄（几几年）</label>
+                        <input type="text" id="age" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="例如：1990年">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">日期</label>
-                        <input type="date" id="date" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">体重</label>
+                        <input type="text" id="weight" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="单位：kg">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">评价周期</label>
-                        <input type="text" id="period" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="例如：2024年第一季度">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">身高</label>
+                        <input type="text" id="height" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="单位：cm">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">三围</label>
+                        <input type="text" id="measurements" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="例如：90-60-90">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">职业</label>
+                        <input type="text" id="occupation" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="请输入职业">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">地区</label>
+                        <input type="text" id="region" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="请输入地区">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">圈龄</label>
+                        <input type="text" id="circleAge" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="例如：3年">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">有过几个男友</label>
+                        <input type="text" id="boyfriends" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="数量">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">是否已婚</label>
+                        <select id="married" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus">
+                            <option value="">请选择</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">有过几个主</label>
+                        <input type="text" id="masters" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="数量">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">破处年龄</label>
+                        <input type="text" id="firstTimeAge" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus" placeholder="年龄">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">生育与否</label>
+                        <select id="children" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus">
+                            <option value="">请选择</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">有无手淫经历</label>
+                        <select id="masturbation" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus">
+                            <option value="">请选择</option>
+                            <option value="有">有</option>
+                            <option value="无">无</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">是否忠心</label>
+                        <select id="loyal" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus">
+                            <option value="">请选择</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">是否听话</label>
+                        <select id="obedient" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus">
+                            <option value="">请选择</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">是否接受多奴</label>
+                        <select id="multiSlave" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus">
+                            <option value="">请选择</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- 工作表现评估 -->
-        <div class="mb-8 fade-in" style="animation-delay: 0.1s">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 card-hover">
-                <h2 class="text-2xl font-bold mb-6 flex items-center space-x-2">
-                    <i class="fas fa-chart-line text-primary-600 dark:text-primary-400"></i>
-                    <span>工作表现评估</span>
-                </h2>
-                
-                <div class="space-y-6">
-                    <!-- 工作完成情况 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">工作完成情况</label>
-                        <textarea id="workCompletion" rows="4" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请描述您在本周期内的工作完成情况..."></textarea>
-                    </div>
-                    
-                    <!-- 工作质量 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">工作质量</label>
-                        <textarea id="workQuality" rows="4" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请评价您的工作质量..."></textarea>
-                    </div>
-                    
-                    <!-- 工作效率 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">工作效率</label>
-                        <textarea id="workEfficiency" rows="4" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请评价您的工作效率..."></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 能力评估 -->
-        <div class="mb-8 fade-in" style="animation-delay: 0.2s">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 card-hover">
-                <h2 class="text-2xl font-bold mb-6 flex items-center space-x-2">
-                    <i class="fas fa-brain text-primary-600 dark:text-primary-400"></i>
-                    <span>能力评估</span>
-                </h2>
-                
-                <div class="space-y-6">
-                    <!-- 专业技能 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">专业技能</label>
-                        <div class="mb-2">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">评分：</span>
-                            <div class="inline-flex space-x-1 ml-2">
-                                <button class="rating-btn" data-rating="1" data-field="skill">1</button>
-                                <button class="rating-btn" data-rating="2" data-field="skill">2</button>
-                                <button class="rating-btn" data-rating="3" data-field="skill">3</button>
-                                <button class="rating-btn" data-rating="4" data-field="skill">4</button>
-                                <button class="rating-btn" data-rating="5" data-field="skill">5</button>
-                            </div>
-                            <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">（1-5分）</span>
-                        </div>
-                        <textarea id="skillDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请详细描述您的专业技能水平..."></textarea>
-                    </div>
-                    
-                    <!-- 沟通能力 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">沟通能力</label>
-                        <div class="mb-2">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">评分：</span>
-                            <div class="inline-flex space-x-1 ml-2">
-                                <button class="rating-btn" data-rating="1" data-field="communication">1</button>
-                                <button class="rating-btn" data-rating="2" data-field="communication">2</button>
-                                <button class="rating-btn" data-rating="3" data-field="communication">3</button>
-                                <button class="rating-btn" data-rating="4" data-field="communication">4</button>
-                                <button class="rating-btn" data-rating="5" data-field="communication">5</button>
-                            </div>
-                            <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">（1-5分）</span>
-                        </div>
-                        <textarea id="communicationDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请描述您的沟通协作能力..."></textarea>
-                    </div>
-                    
-                    <!-- 学习能力 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">学习能力</label>
-                        <div class="mb-2">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">评分：</span>
-                            <div class="inline-flex space-x-1 ml-2">
-                                <button class="rating-btn" data-rating="1" data-field="learning">1</button>
-                                <button class="rating-btn" data-rating="2" data-field="learning">2</button>
-                                <button class="rating-btn" data-rating="3" data-field="learning">3</button>
-                                <button class="rating-btn" data-rating="4" data-field="learning">4</button>
-                                <button class="rating-btn" data-rating="5" data-field="learning">5</button>
-                            </div>
-                            <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">（1-5分）</span>
-                        </div>
-                        <textarea id="learningDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请描述您的学习能力和成长情况..."></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 成就与亮点 -->
-        <div class="mb-8 fade-in" style="animation-delay: 0.3s">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 card-hover">
-                <h2 class="text-2xl font-bold mb-6 flex items-center space-x-2">
-                    <i class="fas fa-trophy text-primary-600 dark:text-primary-400"></i>
-                    <span>成就与亮点</span>
-                </h2>
-                <textarea id="achievements" rows="6" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请列出您在本周期内的主要成就和工作亮点..."></textarea>
-            </div>
-        </div>
-        
-        <!-- 不足与改进 -->
-        <div class="mb-8 fade-in" style="animation-delay: 0.4s">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 card-hover">
-                <h2 class="text-2xl font-bold mb-6 flex items-center space-x-2">
-                    <i class="fas fa-lightbulb text-primary-600 dark:text-primary-400"></i>
-                    <span>不足与改进</span>
-                </h2>
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">存在的不足</label>
-                        <textarea id="weaknesses" rows="4" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请客观分析自身存在的不足..."></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">改进计划</label>
-                        <textarea id="improvements" rows="4" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请制定具体的改进计划和措施..."></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 未来规划 -->
-        <div class="mb-8 fade-in" style="animation-delay: 0.5s">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 card-hover">
-                <h2 class="text-2xl font-bold mb-6 flex items-center space-x-2">
-                    <i class="fas fa-road text-primary-600 dark:text-primary-400"></i>
-                    <span>未来规划</span>
-                </h2>
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">职业发展目标</label>
-                        <textarea id="careerGoals" rows="4" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请描述您的职业发展目标..."></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">学习计划</label>
-                        <textarea id="learningPlan" rows="4" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="请制定您的学习提升计划..."></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 其他说明 -->
-        <div class="mb-8 fade-in" style="animation-delay: 0.6s">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 card-hover">
-                <h2 class="text-2xl font-bold mb-6 flex items-center space-x-2">
-                    <i class="fas fa-comments text-primary-600 dark:text-primary-400"></i>
-                    <span>其他说明</span>
-                </h2>
-                <textarea id="otherComments" rows="5" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 input-focus resize-none" placeholder="其他需要说明的内容..."></textarea>
-            </div>
-        </div>
+        <!-- 评估项目容器 -->
+        <div id="assessmentContainer"></div>
         
     </main>
     
     <!-- 页脚 -->
-    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <p class="text-center text-sm text-gray-600 dark:text-gray-400">
-                © 2024 自评表格系统 | 数据仅保存在本地浏览器
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-8 sm:mt-12">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <p class="text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                © 2024 M自评报告系统 | 数据仅保存在本地浏览器，保护您的隐私
             </p>
         </div>
     </footer>
     
     <script>
-        // 主题切换功能
-        (function() {
-            const themeToggle = document.getElementById('themeToggle');
-            const html = document.documentElement;
-            
-            // 检测系统主题偏好
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const savedTheme = localStorage.getItem('theme');
-            
-            // 应用主题
-            function applyTheme(theme) {
-                if (theme === 'dark' || (!theme && prefersDark)) {
-                    html.classList.add('dark');
-                } else {
-                    html.classList.remove('dark');
-                }
-            }
-            
-            // 初始化主题
-            applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
-            
-            // 切换主题
-            themeToggle.addEventListener('click', () => {
-                const isDark = html.classList.contains('dark');
-                const newTheme = isDark ? 'light' : 'dark';
-                html.classList.toggle('dark');
-                localStorage.setItem('theme', newTheme);
-            });
-            
-            // 监听系统主题变化
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                if (!localStorage.getItem('theme')) {
-                    applyTheme(e.matches ? 'dark' : 'light');
-                }
-            });
-        })();
+        // 评分选项配置
+        const ratingOptions = [
+            { value: 'SSS', label: 'SSS', symbol: '❤❤❤❤❤', desc: '非常喜欢', color: 'red' },
+            { value: 'SS', label: 'SS', symbol: '♥♥', desc: '喜欢', color: 'orange' },
+            { value: 'S', label: 'S', symbol: '♥', desc: '无所谓', color: 'green' },
+            { value: 'Q', label: 'Q', symbol: '-', desc: '不喜欢但有要求会做', color: 'blue' },
+            { value: 'N', label: 'N', symbol: '✗', desc: '绝不', color: 'gray' },
+            { value: 'W', label: 'W', symbol: '?', desc: '不', color: 'slate' }
+        ];
         
-        // 评分按钮功能
-        document.querySelectorAll('.rating-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const rating = parseInt(this.dataset.rating);
-                const field = this.dataset.field;
-                const buttons = document.querySelectorAll(`.rating-btn[data-field="${field}"]`);
+        // 评估类别配置（根据文档图片）
+        const assessmentCategories = [
+            {
+                id: 'sexSlave',
+                title: '性奴',
+                color: 'red',
+                items: [
+                    '强奸', '轮奸', '口暴', '深喉', '颜射', '乳交', '内射', '肛交', '炮机', '器具折磨',
+                    '异物塞入', '食物塞入', '双阳具插入', '多阳具插入', '电动玩具插肛', '扩张阴道',
+                    '扩张肛门', '控制高潮', '拒绝高潮', '潮吹失禁', '强迫自慰', '多P',
+                    'K8 猫奴', 'K9 狗奴', '马奴', '囚笼关押', '项圈镣铐'
+                ]
+            },
+            {
+                id: 'punishmentSlave',
+                title: '刑奴',
+                color: 'purple',
+                items: [
+                    '轻度 SP', '中度 SP', '重度 SP', '轻度耳光', '重度耳光', '口塞', '衣物堵嘴',
+                    '可充气物堵嘴', '阴茎形状口塞', '胶带封嘴', '拉扯头发', '皮带', '藤条',
+                    '棍棒', '戒尺', '散鞭', '毛刷', '手心', '脚心', '轻度拳头击打', '重度拳头击打',
+                    '咬', '虐阴', '拔罐器吸乳头', '乳夹', '乳头承重', '阴夹'
+                ]
+            },
+            {
+                id: 'dogCatSlave',
+                title: '狗奴/猫奴',
+                color: 'blue',
+                items: [
+                    '囚禁饲养', '爬行', '踩踏', '舔足', '舔鞋', '舔肛', '舔阴', '坐脸', '遛弯',
+                    '脚喂食', '舔舐进食', '狗/猫面具', '狗/猫叫', '限制说话', '肛塞尾巴',
+                    '用嘴服侍', '给主人按摩'
+                ]
+            },
+            {
+                id: 'dollSlave',
+                title: '玩偶奴（性玩具）',
+                color: 'pink',
+                items: [
+                    '角色扮演', '绑架', '制服诱惑', '乳环', '阴环', '肛环', '身体检查', '性工具研究',
+                    '剃毛', '木乃伊', '作为艺术品', '作为家具', '作为烟灰缸', '作为女仆',
+                    '限制说话内容、时间', '野外暴露', '野外奴役'
+                ]
+            },
+            {
+                id: 'wildSlave',
+                title: '野奴（暴露奴）',
+                color: 'green',
+                items: [
+                    '野外流放', '野外玩弄', '野外捆绑', '露阴（向朋友）', '露阴（向生人）',
+                    '公开场合捆绑（衣服内）', '公开场合器具（衣服内）', '公共场合暴露',
+                    '公共场合玩弄', '公开场合项圈', '贞操带'
+                ]
+            },
+            {
+                id: 'beastSlave',
+                title: '兽奴',
+                color: 'indigo',
+                items: [
+                    '兽交', '群兽轮交', '人兽同交', '兽虐', '昆虫爬身'
+                ]
+            },
+            {
+                id: 'mindSlave',
+                title: '心奴',
+                color: 'rose',
+                items: [
+                    '排便', '放尿', '灌肠', '言语侮辱', '人格侮辱', '脏话侮辱', '思维控制',
+                    '视觉性骚扰', '网络控制', '语言管教', '成陪伴对象', '催眠幻化', '其他'
+                ]
+            },
+            {
+                id: 'toiletSlave',
+                title: '厕奴',
+                color: 'yellow',
+                items: [
+                    '舔精', '吞精', '喝尿', '尿浴', '舔阴', '食经血', '舔肛', '粪浴', '吃粪',
+                    '唾液', '吃痰'
+                ]
+            },
+            {
+                id: 'control',
+                title: '控制',
+                color: 'cyan',
+                items: [
+                    '睡眠控制', '穿着控制', '行为限制', '体重控制', '强制运动', '强制裸体',
+                    '短期禁止性行为', '长期禁止性行为', '剃毛（阴部）', '剃毛（全身）', '项圈公开'
+                ]
+            },
+            {
+                id: 'bondage',
+                title: '捆绑拘束',
+                color: 'teal',
+                items: [
+                    '全身捆绑', '基本捆绑', '花式捆绑', '驷马捆绑', '胸部紧缚', '阴部紧缚',
+                    '野外捆绑', '公共场合捆绑', '胶带捆绑', '保鲜膜束缚'
+                ]
+            },
+            {
+                id: 'other',
+                title: '其他',
+                color: 'gray',
+                items: [
+                    '多奴调教', '多主调教', '网络公调', '搔痒', '长期圈养', '短期圈养',
+                    '剥夺睡眠', '催眠', '熟人旁观', '生人旁观', '熟人侮辱', '生人侮辱',
+                    '全时主奴', '视觉控制', '感官剥夺', '如厕控制', '饮食控制'
+                ]
+            },
+            {
+                id: 'general',
+                title: '通用项目',
+                color: 'slate',
+                items: [
+                    '挠痒', '滴蜡', '电击', '体罚', '坐冰块', '冰块插入体内', '呼吸控制',
+                    '坐三角木马', '走绳结', '打洞穿环', '打针', '老虎凳', '紧缚', '吊缚',
+                    '拘束', '乳夹', '针刺', '烙印', '刺青', '切割', '火刑', '水刑', '窒息'
+                ]
+            }
+        ];
+        
+        // 初始化应用
+        function initApp() {
+            renderAssessmentCategories();
+            setupEventListeners();
+            loadSavedData();
+            updateProgress();
+        }
+        
+        // 渲染评估类别
+        function renderAssessmentCategories() {
+            const container = document.getElementById('assessmentContainer');
+            container.innerHTML = '';
+            
+            assessmentCategories.forEach((category, catIndex) => {
+                const card = document.createElement('div');
+                card.className = `mb-6 sm:mb-8 fade-in`;
+                card.style.animationDelay = `${catIndex * 0.05}s`;
+                card.dataset.category = category.id;
                 
-                // 更新按钮状态
-                buttons.forEach((b, index) => {
-                    if (index < rating) {
-                        b.classList.add('bg-primary-600', 'text-white');
-                        b.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-                    } else {
-                        b.classList.remove('bg-primary-600', 'text-white');
-                        b.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-                    }
-                });
+                const colorClasses = {
+                    red: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
+                    purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800',
+                    blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
+                    pink: 'bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800',
+                    green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
+                    indigo: 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800',
+                    rose: 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800',
+                    yellow: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800',
+                    cyan: 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-200 dark:border-cyan-800',
+                    teal: 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800',
+                    gray: 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700',
+                    slate: 'bg-slate-50 dark:bg-slate-900/20 border-slate-200 dark:border-slate-800'
+                };
                 
-                // 保存评分
-                localStorage.setItem(`rating_${field}`, rating);
+                card.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-2 ${colorClasses[category.color] || colorClasses.gray} p-4 sm:p-6 card-hover">
+                        <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center space-x-2">
+                            <span class="category-badge ${getCategoryBadgeColor(category.color)}">${category.title}</span>
+                        </h2>
+                        <div class="space-y-3 sm:space-y-4">
+                            ${category.items.map((item, itemIndex) => `
+                                <div class="assessment-item border-b border-gray-200 dark:border-gray-700 pb-3 sm:pb-4 last:border-0" data-item="${category.id}_${itemIndex}">
+                                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2 sm:mb-3">
+                                        <div class="flex-1 min-w-0">
+                                            <label class="block text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                                                ${item}
+                                            </label>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1 sm:gap-2">
+                                            ${ratingOptions.map(opt => `
+                                                <button class="rating-btn ${opt.value.toLowerCase()} px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg font-medium btn-hover bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs sm:text-sm" 
+                                                        data-category="${category.id}" 
+                                                        data-item="${itemIndex}" 
+                                                        data-rating="${opt.value}"
+                                                        title="${opt.desc}">
+                                                    ${opt.label}
+                                                </button>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
             });
             
-            // 初始化评分按钮样式
-            btn.classList.add('w-10', 'h-10', 'rounded-lg', 'font-medium', 'btn-hover', 'bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-        });
-        
-        // 恢复保存的评分
-        ['skill', 'communication', 'learning'].forEach(field => {
-            const savedRating = localStorage.getItem(`rating_${field}`);
-            if (savedRating) {
-                const buttons = document.querySelectorAll(`.rating-btn[data-field="${field}"]`);
-                buttons.forEach((b, index) => {
-                    if (index < parseInt(savedRating)) {
-                        b.classList.add('bg-primary-600', 'text-white');
-                        b.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-                    }
+            // 绑定评分按钮事件
+            document.querySelectorAll('.rating-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    const item = this.dataset.item;
+                    const rating = this.dataset.rating;
+                    
+                    // 移除同组其他按钮的激活状态
+                    const buttons = document.querySelectorAll(`.rating-btn[data-category="${category}"][data-item="${item}"]`);
+                    buttons.forEach(b => b.classList.remove('active'));
+                    
+                    // 激活当前按钮
+                    this.classList.add('active');
+                    
+                    // 保存数据
+                    saveRating(category, item, rating);
+                    updateProgress();
                 });
-            }
-        });
-        
-        // 自动保存功能
-        const inputs = document.querySelectorAll('input, textarea');
-        inputs.forEach(input => {
-            // 恢复保存的数据
-            const savedValue = localStorage.getItem(`data_${input.id}`);
-            if (savedValue) {
-                input.value = savedValue;
-            }
-            
-            // 保存数据
-            input.addEventListener('input', function() {
-                localStorage.setItem(`data_${this.id}`, this.value);
             });
-        });
+            
+        }
         
-        // 导出功能
-        document.getElementById('exportBtn').addEventListener('click', function() {
-            // 收集所有数据
-            const data = {
-                name: document.getElementById('name').value || '未填写',
-                department: document.getElementById('department').value || '未填写',
-                date: document.getElementById('date').value || new Date().toISOString().split('T')[0],
-                period: document.getElementById('period').value || '未填写',
-                workCompletion: document.getElementById('workCompletion').value || '未填写',
-                workQuality: document.getElementById('workQuality').value || '未填写',
-                workEfficiency: document.getElementById('workEfficiency').value || '未填写',
-                skillRating: localStorage.getItem('rating_skill') || '未评分',
-                skillDescription: document.getElementById('skillDescription').value || '未填写',
-                communicationRating: localStorage.getItem('rating_communication') || '未评分',
-                communicationDescription: document.getElementById('communicationDescription').value || '未填写',
-                learningRating: localStorage.getItem('rating_learning') || '未评分',
-                learningDescription: document.getElementById('learningDescription').value || '未填写',
-                achievements: document.getElementById('achievements').value || '未填写',
-                weaknesses: document.getElementById('weaknesses').value || '未填写',
-                improvements: document.getElementById('improvements').value || '未填写',
-                careerGoals: document.getElementById('careerGoals').value || '未填写',
-                learningPlan: document.getElementById('learningPlan').value || '未填写',
-                otherComments: document.getElementById('otherComments').value || '未填写'
+        // 获取类别徽章颜色
+        function getCategoryBadgeColor(color) {
+            const colors = {
+                red: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+                blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+                pink: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
+                green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                indigo: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
+                rose: 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200',
+                yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                cyan: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200',
+                teal: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
+                gray: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+                slate: 'bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-200'
             };
-            
-            // 生成文档内容
-            const docContent = `
-自评表格
-
-═══════════════════════════════════════════════════════════
-
-【个人信息】
-姓名：${data.name}
-部门/岗位：${data.department}
-日期：${data.date}
-评价周期：${data.period}
-
-═══════════════════════════════════════════════════════════
-
-【工作表现评估】
-
-工作完成情况：
-${data.workCompletion}
-
-工作质量：
-${data.workQuality}
-
-工作效率：
-${data.workEfficiency}
-
-═══════════════════════════════════════════════════════════
-
-【能力评估】
-
-专业技能
-评分：${data.skillRating}/5
-描述：${data.skillDescription}
-
-沟通能力
-评分：${data.communicationRating}/5
-描述：${data.communicationDescription}
-
-学习能力
-评分：${data.learningRating}/5
-描述：${data.learningDescription}
-
-═══════════════════════════════════════════════════════════
-
-【成就与亮点】
-${data.achievements}
-
-═══════════════════════════════════════════════════════════
-
-【不足与改进】
-
-存在的不足：
-${data.weaknesses}
-
-改进计划：
-${data.improvements}
-
-═══════════════════════════════════════════════════════════
-
-【未来规划】
-
-职业发展目标：
-${data.careerGoals}
-
-学习计划：
-${data.learningPlan}
-
-═══════════════════════════════════════════════════════════
-
-【其他说明】
-${data.otherComments}
-
-═══════════════════════════════════════════════════════════
-
-导出时间：${new Date().toLocaleString('zh-CN')}
-            `.trim();
-            
-            // 创建并下载文件
-            const blob = new Blob(['\ufeff' + docContent], { type: 'text/plain;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `自评表格_${data.name || '未命名'}_${data.date || new Date().toISOString().split('T')[0]}.txt`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // 显示成功提示
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-check"></i> <span>导出成功</span>';
-            this.classList.add('bg-green-600', 'hover:bg-green-700');
-            this.classList.remove('bg-primary-600', 'hover:bg-primary-700');
-            
-            setTimeout(() => {
-                this.innerHTML = originalText;
-                this.classList.remove('bg-green-600', 'hover:bg-green-700');
-                this.classList.add('bg-primary-600', 'hover:bg-primary-700');
-            }, 2000);
-        });
+            return colors[color] || colors.gray;
+        }
         
-        // 页面加载动画
-        window.addEventListener('load', () => {
-            const elements = document.querySelectorAll('.fade-in');
-            elements.forEach((el, index) => {
-                setTimeout(() => {
-                    el.style.opacity = '1';
-                }, index * 100);
+        // 保存评分
+        function saveRating(category, item, rating) {
+            const key = `rating_${category}_${item}`;
+            localStorage.setItem(key, rating);
+            showSaveStatus();
+        }
+        
+        // 获取评分
+        function getRating(category, item) {
+            const key = `rating_${category}_${item}`;
+            return localStorage.getItem(key) || '';
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 主题切换
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            
+            // 导出按钮
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                const data = collectAllData();
+                exportAsDOC(data);
             });
-        });
-        
-        // 懒加载优化（如果需要加载图片）
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
-                            img.removeAttribute('data-src');
-                            observer.unobserve(img);
-                        }
-                    }
+            
+            // 清空数据
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                if (confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            });
+            
+            // 自动保存基本信息
+            document.querySelectorAll('#name, #age, #weight, #height, #measurements, #occupation, #region, #circleAge, #boyfriends, #married, #masters, #firstTimeAge, #children, #masturbation, #loyal, #obedient, #multiSlave').forEach(input => {
+                input.addEventListener('input', function() {
+                    saveField(this.id, this.value);
                 });
-            });
-            
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                imageObserver.observe(img);
+                input.addEventListener('change', function() {
+                    saveField(this.id, this.value);
+                });
             });
         }
+        
+        // 主题切换
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+        
+        // 初始化主题
+        (function() {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const savedTheme = localStorage.getItem('theme');
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+        
+        // 保存字段
+        function saveField(key, value) {
+            localStorage.setItem(`field_${key}`, value);
+            showSaveStatus();
+        }
+        
+        // 显示保存状态
+        function showSaveStatus() {
+            const status = document.getElementById('saveStatus');
+            status.classList.remove('hidden');
+            status.innerHTML = '<i class="fas fa-check-circle"></i>';
+            setTimeout(() => {
+                status.classList.add('hidden');
+            }, 2000);
+        }
+        
+        // 加载保存的数据
+        function loadSavedData() {
+            // 加载基本信息
+            ['name', 'age', 'weight', 'height', 'measurements', 'occupation', 'region', 'circleAge', 'boyfriends', 'married', 'masters', 'firstTimeAge', 'children', 'masturbation', 'loyal', 'obedient', 'multiSlave'].forEach(id => {
+                const value = localStorage.getItem(`field_${id}`);
+                if (value) {
+                    const element = document.getElementById(id);
+                    if (element) element.value = value;
+                }
+            });
+            
+            // 加载评分和备注
+            assessmentCategories.forEach(category => {
+                category.items.forEach((item, itemIndex) => {
+                    const rating = getRating(category.id, itemIndex);
+                    if (rating) {
+                        const button = document.querySelector(`.rating-btn[data-category="${category.id}"][data-item="${itemIndex}"][data-rating="${rating}"]`);
+                        if (button) button.classList.add('active');
+                    }
+                });
+            });
+        }
+        
+        // 更新进度
+        function updateProgress() {
+            let total = 0;
+            let completed = 0;
+            
+            assessmentCategories.forEach(category => {
+                category.items.forEach((item, itemIndex) => {
+                    total++;
+                    if (getRating(category.id, itemIndex)) {
+                        completed++;
+                    }
+                });
+            });
+            
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressText').textContent = `${percentage}% (${completed}/${total})`;
+        }
+        
+        // 收集所有数据
+        function collectAllData() {
+            const data = {
+                basic: {},
+                assessments: {},
+                exportTime: new Date().toLocaleString('zh-CN')
+            };
+            
+            // 基本信息
+            ['name', 'age', 'weight', 'height', 'measurements', 'occupation', 'region', 'circleAge', 'boyfriends', 'married', 'masters', 'firstTimeAge', 'children', 'masturbation', 'loyal', 'obedient', 'multiSlave'].forEach(id => {
+                const element = document.getElementById(id);
+                data.basic[id] = element ? element.value : '';
+            });
+            
+            // 评估数据
+            assessmentCategories.forEach(category => {
+                data.assessments[category.title] = {};
+                category.items.forEach((item, itemIndex) => {
+                    const rating = getRating(category.id, itemIndex);
+                    data.assessments[category.title][item] = {
+                        rating: rating || '未评分'
+                    };
+                });
+            });
+            
+            return data;
+        }
+        
+        // 导出为DOC文档
+        function exportAsDOC(data) {
+            const htmlContent = generateOriginalHTML(data);
+            const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `M自评报告_${data.basic.name || '未命名'}_${new Date().toISOString().split('T')[0]}.doc`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            // 显示成功提示
+            const btn = document.getElementById('exportBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> <span class="hidden sm:inline">导出成功</span><span class="sm:hidden">成功</span>';
+            btn.classList.add('bg-green-600', 'hover:bg-green-700');
+            btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                btn.classList.add('bg-primary-600', 'hover:bg-primary-700');
+            }, 2000);
+        }
+        
+        // 生成原样HTML文档
+        function generateOriginalHTML(data) {
+            const ratingSymbols = {
+                'SSS': '❤❤❤❤❤',
+                'SS': '♥♥',
+                'S': '♥',
+                'Q': '-',
+                'N': '✗',
+                'W': '?'
+            };
+            
+            let html = `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M自评报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.6;
+            padding: 20px;
+            background: white;
+            color: black;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .instructions {
+            font-size: 11px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .rating-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #000;
+            font-size: 11px;
+        }
+        .rating-legend span {
+            white-space: nowrap;
+        }
+        .table-container {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .table-container table {
+            width: 100%;
+            border: 1px solid #000;
+            border-collapse: collapse;
+        }
+        .table-container th,
+        .table-container td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .table-container th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .category-header {
+            background-color: #e0e0e0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .item-cell {
+            width: 40%;
+        }
+        .rating-cell {
+            width: 30%;
+            text-align: center;
+        }
+        .category-cell {
+            width: 15%;
+            text-align: center;
+            font-weight: bold;
+        }
+        .basic-info {
+            margin-bottom: 30px;
+            border: 1px solid #000;
+            padding: 15px;
+        }
+        .basic-info h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .basic-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .basic-info-item {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .basic-info-label {
+            font-weight: bold;
+            margin-right: 5px;
+            min-width: 80px;
+        }
+        @media print {
+            body { padding: 10px; }
+            .rating-legend { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>M自评报告</h1>
+        <div class="instructions">
+            根据情况填写自身感觉，可用字母表述或颜色或符号表示（听主人要求的）填表人：${data.basic.name || '___________'}
+        </div>
+        <div class="rating-legend">
+            <span><strong>SSS</strong> ❤❤❤❤❤ 非常喜欢</span>
+            <span><strong>SS</strong> ♥♥ 喜欢</span>
+            <span><strong>S</strong> ♥ 无所谓</span>
+            <span><strong>Q</strong> - 不喜欢但有要求会做</span>
+            <span><strong>N</strong> ✗ 绝不</span>
+            <span><strong>W</strong> ? 不</span>
+        </div>
+    </div>
+    
+    <div class="basic-info">
+        <h2>M详细资料</h2>
+        <div class="basic-info-grid">
+            <div class="basic-info-item"><span class="basic-info-label">姓名：</span>${data.basic.name || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">年龄：</span>${data.basic.age || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">体重：</span>${data.basic.weight || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">身高：</span>${data.basic.height || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">三围：</span>${data.basic.measurements || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">职业：</span>${data.basic.occupation || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">地区：</span>${data.basic.region || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">圈龄：</span>${data.basic.circleAge || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">有过几个男友：</span>${data.basic.boyfriends || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">是否已婚：</span>${data.basic.married || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">有过几个主：</span>${data.basic.masters || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">破处年龄：</span>${data.basic.firstTimeAge || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">生育与否：</span>${data.basic.children || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">有无手淫经历：</span>${data.basic.masturbation || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">是否忠心：</span>${data.basic.loyal || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">是否听话：</span>${data.basic.obedient || ''}</div>
+            <div class="basic-info-item"><span class="basic-info-label">是否接受多奴：</span>${data.basic.multiSlave || ''}</div>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="category-cell">类型</th>
+                    <th class="item-cell">项目</th>
+                    <th class="rating-cell">感觉</th>
+                </tr>
+            </thead>
+            <tbody>`;
+            
+            // 生成表格内容
+            for (const [category, items] of Object.entries(data.assessments)) {
+                let isFirstItem = true;
+                for (const [item, result] of Object.entries(items)) {
+                    const rating = result.rating && result.rating !== '未评分' ? result.rating : '';
+                    const symbol = ratingSymbols[rating] || '';
+                    html += `
+                <tr>
+                    ${isFirstItem ? `<td rowspan="${Object.keys(items).length}" class="category-header">${category}</td>` : ''}
+                    <td class="item-cell">${item}</td>
+                    <td class="rating-cell">${rating} ${symbol}</td>
+                </tr>`;
+                    isFirstItem = false;
+                }
+            }
+            
+            html += `
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="text-align: center; margin-top: 20px; font-size: 10px; color: #666;">
+        导出时间：${data.exportTime}
+    </div>
+</body>
+</html>`;
+            
+            return html;
+        }
+        
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
